@@ -1,11 +1,13 @@
 import SwiftUI
 
-class Store: ObservableObject {
-    @Published var counter = 0
+@Observable
+class Store {
+    var counter: Double = 0
 }
 
 struct ContentView: View {
-    var store = Store()
+    @Environment(Store.self) var store
+    var secondStore = Store()
 
     var body: some View {
         VStack {
@@ -17,6 +19,31 @@ struct ContentView: View {
                 Text("+")
             }
             .buttonStyle(.bordered)
+            
+            Text("Second store: \(secondStore.counter)")
+            
+            Subview(store: secondStore)
+        }
+        .padding()
+    }
+}
+
+struct Subview: View {
+    var store: Store
+
+    var body: some View {
+        @Bindable var store = store
+        VStack {
+            Text("Subview: \(store.counter)")
+
+            Button {
+                store.counter += 1
+            } label: {
+                Text("+")
+            }
+            .buttonStyle(.bordered)
+            
+            Slider(value: $store.counter, in: 0...10)
         }
         .padding()
     }
@@ -24,4 +51,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environment(Store())
 }
